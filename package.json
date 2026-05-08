@@ -1,0 +1,17 @@
+{
+  "name": "lab3",
+  "version": "1.0.0",
+  "description": "Memoization Function with Eviction Strategies",
+  "type": "module",
+  "main": "lab3.js",
+  "scripts": {
+    "start": "node lab3.js",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.0.0"
+  }
+}
