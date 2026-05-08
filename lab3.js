@@ -4,15 +4,21 @@ function memoize(fn, options = {}) {
 
   const limit = options.limit || Infinity;
   const policy = options.policy || 'LRU';
+  const ttl = options.ttl || null;
 
   return function (...args) {
     const key = JSON.stringify(args);
     const now = Date.now();
 
     if (cache[key] !== undefined) {
-      cache[key].uses += 1;
-      cache[key].lastUsed = now;
-      return cache[key].value;
+      if (ttl && now - cache[key].createdAt > ttl) {
+        delete cache[key];
+        queue = queue.filter((k) => k !== key);
+      } else {
+        cache[key].uses += 1;
+        cache[key].lastUsed = now;
+        return cache[key].value;
+      }
     }
 
     const result = fn(...args);
@@ -53,9 +59,12 @@ const slowMultiply = (a, b) => {
   return a * b;
 };
 
-const memoizedMult = memoize(slowMultiply, { limit: 2, policy: 'LRU' });
+const memoizedMult = memoize(slowMultiply, { limit: 2, policy: 'LRU', ttl: 2000 });
 
 console.log(memoizedMult(2, 2));
 console.log(memoizedMult(2, 2));
-console.log(memoizedMult(3, 3));
-console.log(memoizedMult(2, 2));
+
+setTimeout(() => {
+  console.log('\n3 seconds passed...');
+  console.log(memoizedMult(2, 2));
+}, 3000);
